@@ -11,7 +11,7 @@ cd ContractsConnected
 
 # Set your OpenAI API key
 cp .env.example .env
-# Edit backend/.env and add: OPENAI_API_KEY=sk-your-key-here
+# Edit .env and add: OPENAI_API_KEY=sk-your-key-here
 
 # Start everything
 docker-compose up --build
