@@ -1,0 +1,45 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: contract_analysis_backend
+    ports:
+      - "8000:8000"
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - OPENAI_MODEL=gpt-3.5-turbo
+      - ENVIRONMENT=development
+      - LOG_LEVEL=INFO
+      - MAX_FILE_SIZE_MB=10
+      - ALLOWED_FILE_TYPES=pdf,txt
+      - CORS_ORIGINS=http://localhost:3000,http://localhost:5173,http://frontend
+    volumes:
+      - ./backend/app:/app/app
+    networks:
+      - contract_network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/v1/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: contract_analysis_frontend
+    ports:
+      - "3000:80"
+    environment:
+      - VITE_API_URL=http://backend:8000
+    depends_on:
+      - backend
+    networks:
+      - contract_network
+
+networks:
+  contract_network:
+    driver: bridge
